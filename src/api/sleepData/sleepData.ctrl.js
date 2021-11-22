@@ -45,7 +45,7 @@ export const init = async ctx => {
         ctx.throw(500, e);
     }
 },isExists = async ctx => {
-    const {username,sleepDate} = ctx.request.body;
+    const {username,sleepDate} = ctx.request.query;
     if (!username || !sleepDate) {
         ctx.status = 400;
         return;
@@ -54,15 +54,15 @@ export const init = async ctx => {
     try {
         const sleepData = await SleepData.findOne({username, sleepDate});
         if (!sleepData) {
-            ctx.body = { 'exists': 'false'};
+            ctx.body = { 'exists': false};
             return;
         }
-        ctx.body = { 'exists': 'true'};
+        ctx.body = { 'exists': true};
     } catch (e) {
         ctx.throw(500, e);
     }
 },read = async ctx=> {
-    const {username,sleepDate} = ctx.request.body;
+    const {username,sleepDate} = ctx.request.query;
     if(!username || !sleepDate) {
         ctx.status = 400;
         return;
@@ -78,7 +78,7 @@ export const init = async ctx => {
         ctx.throw(500,e);
     }
 },readWeekend = async ctx => {
-    const {username,sleepDate} = ctx.request.body;
+    const {username,sleepDate} = ctx.request.query;
     if(!username || !sleepDate) {
         ctx.status= 400;
         return;
@@ -95,7 +95,7 @@ export const init = async ctx => {
 
     try {
         const response = {};
-
+        let avgData = [];
         for(let i=0;i<7;i++) {
             const sleepData = await SleepData.findOne({username,sleepDate:week[i]});
             if(!sleepData) {
@@ -106,9 +106,42 @@ export const init = async ctx => {
                 await newData.save();
             }
             const sleepDataSecond = await SleepData.findOne({username,sleepDate:week[i]});
+            let elapsed;
+            if(sleepDataSecond.startSleep && sleepDataSecond.finishSleep) {
+                let prevDate;
+                {
+                    const {year, month, day, hour, min} = sleepDataSecond.startSleep;
+                    if(year && month && day && hour && min) {
+                        prevDate = new Date(Number(year), Number(month), Number(day), Number(hour), Number(min));
+                    }
+                }
+                let nextDate;
+                {
+                    const {year, month, day, hour, min} = sleepDataSecond.finishSleep;
+                    if(year && month && day && hour && min) {
+                        nextDate = new Date(Number(year), Number(month), Number(day), Number(hour), Number(min));
+                    }
+                }
+                if(prevDate !== "1899-12-30T15:32:08.000Z" && nextDate !== "1899-12-30T15:32:08.000Z") {
+                    const elapsedSec = nextDate.getTime() - prevDate.getTime();
+                    const elapsedMin = elapsedSec / 1000 / 60;
+                    console.log(sleepDataSecond.startSleep);
+                    console.log(sleepDataSecond.finishSleep);
+                    console.log(prevDate);
+                    console.log(nextDate);
+                    console.log(elapsedSec);
+                    console.log(elapsedMin)
+                    elapsed = {
+                        hour: Math.floor(elapsedMin / 60),
+                        min: elapsedMin % 60
+                    }
+                }
+            }
+
             response[weekend[i]] = {
                 startSleep: sleepDataSecond.startSleep,
                 finishSleep: sleepDataSecond.finishSleep,
+                elapsed: elapsed
             }
         }
         ctx.body = response;
