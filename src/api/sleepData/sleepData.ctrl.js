@@ -130,7 +130,8 @@ export const init = async ctx => {
                     console.log(prevDate);
                     console.log(nextDate);
                     console.log(elapsedSec);
-                    console.log(elapsedMin)
+                    console.log(elapsedMin);
+                    avgData.push(elapsedMin);
                     elapsed = {
                         hour: Math.floor(elapsedMin / 60),
                         min: elapsedMin % 60
