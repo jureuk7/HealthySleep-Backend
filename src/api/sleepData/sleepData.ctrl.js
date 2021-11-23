@@ -107,6 +107,7 @@ export const init = async ctx => {
             }
             const sleepDataSecond = await SleepData.findOne({username,sleepDate:week[i]});
             let elapsed;
+            let exists;
             if(sleepDataSecond.startSleep && sleepDataSecond.finishSleep) {
                 let prevDate;
                 {
@@ -136,13 +137,17 @@ export const init = async ctx => {
                         hour: Math.floor(elapsedMin / 60),
                         min: elapsedMin % 60
                     }
+                    exists = true;
+                } else {
+                    exists = false;
                 }
             }
             response["avgData"] = avgData;
             response[weekend[i]] = {
                 startSleep: sleepDataSecond.startSleep,
                 finishSleep: sleepDataSecond.finishSleep,
-                elapsed: elapsed
+                elapsed: elapsed,
+                exists: exists
             }
         }
         ctx.body = response;
