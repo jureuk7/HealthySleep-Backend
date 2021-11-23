@@ -122,7 +122,7 @@ export const init = async ctx => {
                         nextDate = new Date(Number(year), Number(month), Number(day), Number(hour), Number(min));
                     }
                 }
-                if(prevDate !== "1899-12-30T15:32:08.000Z" && nextDate !== "1899-12-30T15:32:08.000Z") {
+                if(prevDate !== "1899-12-30T15:32:08.000Z" && nextDate !== "1899-12-30T15:32:08.000Z" && prevDate && nextDate) {
                     const elapsedSec = nextDate.getTime() - prevDate.getTime();
                     const elapsedMin = elapsedSec / 1000 / 60;
                     console.log(sleepDataSecond.startSleep);
@@ -138,7 +138,7 @@ export const init = async ctx => {
                     }
                 }
             }
-
+            response["avgData"] = avgData;
             response[weekend[i]] = {
                 startSleep: sleepDataSecond.startSleep,
                 finishSleep: sleepDataSecond.finishSleep,
