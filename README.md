@@ -8,7 +8,7 @@ HealthySleep(건강한수면) 서비스의 백엔드 프로젝트입니다<br/>
 ### Clone
 `git clone https://github.com/wugusaud77/HealthySleep-Backend.git`
 ### Setup
-`npm install` 또는 `yarn add`
+`npm install` 또는 `yarn`
 ### Run
 `npm run start:dev` 또는 `yarn start:dev`
 
